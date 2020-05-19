@@ -28,21 +28,6 @@ def findplate(plate):
     except:
         print("Tak jumpa")
 
-#Find date
-def attendancequery(vehicle_id):
-        date = datetime.datetime.now()
-        date_time = date.strftime("%Y-%m-%d")
-        sql = "SELECT * FROM attendances WHERE DATE(timein) = %s AND vehicle_id = %s"
-        value = (date_time, vehicle_id)
-        result = cursor.execute(sql, value)
-        record = cursor.fetchone()
-        if not record:
-            clockedin(vehicle_id)
-        else:
-            print("You already clocked in today")
-            gatecontrol()
-
-#Clocking in attendance
 def clockedin(vehicle_id):
     date = datetime.datetime.now()
     date_time = date.strftime("%Y-%m-%d %H:%M:%S")
@@ -51,11 +36,42 @@ def clockedin(vehicle_id):
         val = (date_time, 'CCI', vehicle_id,)
         send = cursor.execute(sql, val)
         mydb.commit()
-        gatecontrol()
         print("You've clocked in")
         print(date_time)
+        return cursor.lastrowid
     except:
         print("Clock in failed")
+
+#Find date
+def attendancequery(vehicle_id):
+    date = datetime.datetime.now()
+    date_time = date.strftime("%Y-%m-%d")
+    sql = "SELECT * FROM attendances WHERE DATE(timein) = %s AND vehicle_id = %s"
+    value = (date_time, vehicle_id)
+    result = cursor.execute(sql, value)
+    record = cursor.fetchone()
+    if not record:
+        print("You haven't logged in")
+        print("Creating a log")
+        attendance_id = clockedin(vehicle_id)
+        clockedout(attendance_id)
+    else:
+        attendance_id = record[0]
+        print(attendance_id)
+        clockedout(attendance_id)
+        
+#Clocking out attendance
+def clockedout(attendance_id):
+    date = datetime.datetime.now()
+    date_time = date.strftime("%Y-%m-%d %H:%M:%S")
+    sql = "UPDATE attendances SET timeout = %s, locationout = %s WHERE id = %s "
+    val = (date_time, 'COE', attendance_id,)
+    send = cursor.execute(sql, val)
+    mydb.commit()
+    gatecontrol()
+    print(date_time)
+    print("You've clocked out")
+
 
 #To control the gates
 def gatecontrol():
@@ -288,3 +304,4 @@ videostream.stop()
 mydb.close()
 # good practise to cleanup GPIO at some point before exit
 GPIO.cleanup()
+
