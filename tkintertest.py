@@ -1,28 +1,32 @@
-import tkinter as tk
+from tkinter import *
+import tkinter as ttk
 
-root = tk.Tk()
+root = Tk()
+root.title("Tk dropdown example")
 
-canvas1 = tk.Canvas(root, width = 640, height = 480, relief = 'raised')
-canvas1.pack()
+# Add a grid
+mainframe = Frame(root)
+mainframe.grid(column=0,row=0, sticky=(N,W,E,S) )
+mainframe.columnconfigure(0, weight = 1)
+mainframe.rowconfigure(0, weight = 1)
+mainframe.pack(pady = 100, padx = 100)
 
-label1 = tk.Label(root, text="Which department is this?")
-label1.config(font=('helvetica', 14))
-canvas1.create_window(315, 30, window=label1, anchor="center")
+# Create a Tkinter variable
+tkvar = StringVar(root)
 
-label2 = tk.Label(root, text='Type the location:')
-label2.config(font=('helvetica', 12))
-canvas1.create_window(315, 110, window=label2, anchor = "center")
+# Dictionary with options
+choices = { 'Pizza','Lasagne','Fries','Fish','Potatoe'}
+tkvar.set('Pizza') # set the default option
 
-entry1 = tk.Entry(root)
-canvas1.create_window(315,140, window=entry1, anchor = "center")
+popupMenu = OptionMenu(mainframe, tkvar, *choices)
+Label(mainframe, text="Choose a dish").grid(row = 1, column = 1)
+popupMenu.grid(row = 2, column =1)
 
-def gateName():
-    x1 = entry1.get()
-    
-    label1 = tk.Label(root, text = x1)
-    canvas1.create_window(315,230,window=label1)
+# on change dropdown value
+def change_dropdown(*args):
+    print( tkvar.get() )
 
-button1 = tk.Button(text="Get the gate open", command=gateName,  bg='brown', fg='white', font=('helvetica', 9, 'bold'))
-canvas1.create_window(315, 180, window=button1, anchor = "center")
+# link function to change dropdown
+tkvar.trace('w', change_dropdown)
 
 root.mainloop()

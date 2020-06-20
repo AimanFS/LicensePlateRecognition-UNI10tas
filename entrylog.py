@@ -14,6 +14,7 @@ from pprint import pprint
 import RPi.GPIO as GPIO
 import time
 from RpiMotorLib import RpiMotorLib
+from tkinter import *
 import tkinter as tk
 import threading
 import base64
@@ -40,8 +41,7 @@ def findplate(plate):
         else:
             print("Vehicle not registered")
     except Exception as e:
-        print("Vehicle not found")
-        print(e)
+        graphic.setMessage("Vehicle not registered")
     
 
 #Find date
@@ -156,6 +156,7 @@ class VideoStream:
 	# Indicate that the camera and thread should be stopped
         self.stopped = True
 
+#Define the window to display the data
 class Gui(threading.Thread):
     def __init__(self):
         threading.Thread.__init__(self)
@@ -278,34 +279,33 @@ class Gui(threading.Thread):
 root = tk.Tk()
 root.title("Uniten TAS v3.0 Department")
 
-#Gets the values for the height and width
-windowWidth = root.winfo_reqwidth()
-windowHeight = root.winfo_reqheight()
+# Add a grid
+mainframe = Frame(root)
+mainframe.grid(column=0,row=0, sticky=(N,W,E,S) )
+mainframe.columnconfigure(0, weight = 1)
+mainframe.rowconfigure(0, weight = 1)
+mainframe.pack(pady = 100, padx = 100)
 
-#Gets both half the screen width/height and window width/height
-positionRight = int(root.winfo_screenwidth()/2 - windowWidth/2)
-positionDown = int(root.winfo_screenheight()/2 - windowHeight/2)
+# Create a Tkinter variable
+tkvar = StringVar(root)
 
-root.geometry("+{}+{}".format(positionRight, positionDown))
-location = ""
-canvas1 = tk.Canvas(root, width=500, height=450)
-canvas1.pack()
-gatelabel = tk.Label(root, text='Enter the department')
-gatelabel.config(font=('helvetica', 15))
-canvas1.create_window(250,25, window=gatelabel)
-entry1 = tk.Entry(root)
-canvas1.create_window(250,140, window=entry1)
+# Dictionary with options
+choices = { 'CCI','COE','CES'}
+tkvar.set('CCI') # set the default option
 
-def getDepartment():
+popupMenu = OptionMenu(mainframe, tkvar, *choices)
+Label(mainframe, text="Select department").grid(row = 1, column = 1)
+popupMenu.grid(row = 2, column =1)
+
+# on change dropdown value
+def getDepartment(*args):
     global location
-    location = entry1.get()
+    location = tkvar.get()
     root.destroy()
 
 button1 = tk.Button(text='Set department', command=getDepartment)
-canvas1.create_window(250,180, window=button1)
-
+button1.place(relx=0.5, rely=0.7, anchor=CENTER)
 root.mainloop()
-
 
 MODEL_NAME = "TFlite_model"
 GRAPH_NAME = "detect.tflite"
@@ -479,7 +479,7 @@ if(detectStart == True):
         cv2.putText(frame,'FPS: {0:.2f}'.format(frame_rate_calc),(30,50),cv2.FONT_HERSHEY_SIMPLEX,1,(255,255,0),2,cv2.LINE_AA)
 
         # All the results have been drawn on the frame, so it's time to display it.
-        cv2.imshow('Object detector', frame)
+        cv2.imshow('Vehicle detector', frame)
 
         # Calculate framerate
         t2 = cv2.getTickCount()
