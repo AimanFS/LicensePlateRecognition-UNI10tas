@@ -23,7 +23,7 @@ from urllib.request import urlopen
 #Find plate from database
 def findplate(plate):
     try:
-        sql = "SELECT id,brand,model,color, staff_id FROM vehicles WHERE platenumber = %s"
+        sql = "SELECT id,brand,model,color, staff_id FROM vehicles WHERE platenumber = %s AND state= 0"
         value = (plate,)
         result = cursor.execute(sql, value)
         record = cursor.fetchone()
@@ -99,10 +99,10 @@ def gatecontrol():
     
     # call the function pass the parameters
     graphic.setMessage("Opening the gate")
-    mymotortest.motor_run(GpioPins , .001, 128, False, False, "half", .05)
+    mymotortest.motor_run(GpioPins , .001, 128, True, False, "half", .05)
     time.sleep(2)
     graphic.setMessage("Closing the gate")
-    mymotortest.motor_run(GpioPins , .001, 128, True, False, "half", .05)
+    mymotortest.motor_run(GpioPins , .001, 128, False, False, "half", .05)
     time.sleep(2)
     graphic.setPlate("")
     graphic.setName("")
@@ -255,7 +255,7 @@ class Gui(threading.Thread):
         self.canvas1.create_window(525, 150, window=self.messageLabel2, anchor='center')
         self.root.mainloop()
     def update(self):
-        self.connectLabel['text'] = "Connected"   
+        self.connectLabel['text'] = "Connected"
     def setPlate(self, plate):
         self.plateLabel2['text'] = plate
     def setName(self, staffname):

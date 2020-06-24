@@ -23,7 +23,7 @@ from urllib.request import urlopen
 #Find plate from database
 def findplate(plate):
     try:
-        sql = "SELECT id,brand,model,color, staff_id FROM vehicles WHERE platenumber = %s"
+        sql = "SELECT id,brand,model,color, staff_id FROM vehicles WHERE platenumber = %s AND state=0"
         value = (plate,)
         result = cursor.execute(sql, value)
         record = cursor.fetchone()
@@ -122,10 +122,10 @@ def gatecontrol():
 
     # call the function pass the parameters
     graphic.setMessage("Opening the gate")
-    mymotortest.motor_run(GpioPins , .001, 128, False, False, "half", .05)
+    mymotortest.motor_run(GpioPins , .001, 128, True, False, "half", .05)
     time.sleep(2)
     graphic.setMessage("Closing the gate")
-    mymotortest.motor_run(GpioPins , .001, 128, True, False, "half", .05)
+    mymotortest.motor_run(GpioPins , .001, 128, False, False, "half", .05)
     time.sleep(2)
     graphic.setPlate("")
     graphic.setName("")
@@ -496,6 +496,7 @@ if(detectStart == True):
                                     plate = result['results'][0]['plate'].upper()
                                     print(plate)
                                     graphic.setMessage("License plate found")
+                                    graphic.setPlate(plate)
                                     findplate(plate)
                                 except IndexError:
                                     print("Plate not found")
