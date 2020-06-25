@@ -41,7 +41,7 @@ def findplate(plate):
         else:
             print("Vehicle not registered")
     except Exception as e:
-        graphic.setMessage("Vehicle not registered")
+        graphic.setMessage("Vehicle not registered!")
     
 
 #Find date
@@ -66,6 +66,7 @@ def attendancequery(vehicle_id, staff_id):
             clockedin(vehicle_id, staff_id)
         else:
             print("You already clocked in today")
+            graphic.setMessage("You have already clocked in today!")
             gatecontrol()
 
 #Clocking in attendance
@@ -89,20 +90,21 @@ def clockedin(vehicle_id, staff_id):
         mydb.commit()
         gatecontrol()
         print("You've clocked in")
-        graphic.setMessage("You've clocked in")
+        graphic.setMessage("You have clocked in!")
         print(date_time)
     except:
         print("Clock in failed")
+        graphic.setMessage("Could not clock in!")
 
 #To control the gates
 def gatecontrol():
     
     # call the function pass the parameters
-    graphic.setMessage("Opening the gate")
-    mymotortest.motor_run(GpioPins , .001, 128, True, False, "half", .05)
-    time.sleep(2)
-    graphic.setMessage("Closing the gate")
+    graphic.setMessage("Opening the gate!")
     mymotortest.motor_run(GpioPins , .001, 128, False, False, "half", .05)
+    time.sleep(2)
+    graphic.setMessage("Closing the gate!")
+    mymotortest.motor_run(GpioPins , .001, 128, True, False, "half", .05)
     time.sleep(2)
     graphic.setPlate("")
     graphic.setName("")
@@ -246,9 +248,9 @@ class Gui(threading.Thread):
         self.locationLabel2.config(font=('helvetica', 30))
         self.canvas1.create_window(220, 527, window=self.locationLabel2, anchor='nw')
         #message label
-        self.messageLabel1 = tk.Label(self.root, text='Status:', bg='white')
-        self.messageLabel1.config(font=('helvetica', 30))
-        self.canvas1.create_window(275, 150, window=self.messageLabel1, anchor='center')
+        #self.messageLabel1 = tk.Label(self.root, text='Status:', bg='white')
+        #self.messageLabel1.config(font=('helvetica', 30))
+        #self.canvas1.create_window(275, 150, window=self.messageLabel1, anchor='center')
         #message type label
         self.messageLabel2 = tk.Label(self.root, text='', bg='white')
         self.messageLabel2.config(font=('helvetica', 30))
@@ -459,7 +461,7 @@ if(detectStart == True):
                     #capture car data
                     if (object_name == "car"):
                         counter = counter + 1
-                        graphic.setMessage("Vehicle detected")
+                        graphic.setMessage("Vehicle detected!")
                         print(counter)
                         if (counter > 3):
                             cv2.imwrite('car.jpg',frame)
@@ -475,15 +477,15 @@ if(detectStart == True):
                                 try:
                                     plate = result['results'][0]['plate'].upper()
                                     print(plate)
-                                    graphic.setMessage("License plate found")
+                                    graphic.setMessage("License plate found!")
                                     graphic.setPlate(plate)
                                     findplate(plate)
                                 except IndexError:
                                     print("Plate not found")
-                                    graphic.setMessage("Plate not found")
+                                    graphic.setMessage("Plate not found!")
                             else:
                                 print("No plate found")
-                                graphic.setMessage("Plate not found")
+                                graphic.setMessage("Plate not found!")
                             counter = 0
                                 
                             
